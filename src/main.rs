@@ -1,12 +1,12 @@
 use crate::settings::GameSettings;
-use crate::state::GameState;
+use crate::state::{GameState, StateConfig};
 use bevy::app::PluginGroupBuilder;
 use bevy::prelude::*;
 use bevy::window::{WindowLevel, WindowMode, WindowResolution};
 use bevy::DefaultPlugins;
-use bevy_egui::egui::util::undoer::Settings;
 use bevy_egui::EguiPlugin;
 use bevy_prototype_debug_lines::DebugLinesPlugin;
+use color_eyre::Result;
 
 pub mod controller;
 pub mod input;
@@ -15,11 +15,16 @@ pub mod setup;
 pub mod state;
 pub mod ui;
 
-fn main() {
+fn main() -> Result<()> {
+    color_eyre::install()?;
+
     let mut app = App::new();
 
+    // Easier to just include state.yaml
+    let state_config = StateConfig::load_str(include_str!("../assets/state.yaml")).unwrap();
+
     let game_settings = GameSettings {
-        window_mode: WindowMode::BorderlessFullscreen,
+        window_mode: WindowMode::Windowed,
         resolution: (1920f32, 1080f32),
         show_debug_ui: true,
         show_stats: true,
@@ -34,6 +39,7 @@ fn main() {
 
     // Game resources
     app.insert_resource(game_settings);
+    app.insert_resource(state_config);
     app.add_state::<GameState>();
 
     // Game startup
@@ -42,6 +48,14 @@ fn main() {
 
     app.add_startup_system(ui::stats::setup_stats);
 
+    app.add_system(ui::splash::enter.in_schedule(OnEnter(GameState::Splash)));
+    app.add_system(ui::splash::update.in_set(OnUpdate(GameState::Splash)));
+    app.add_system(ui::splash::exit.in_schedule(OnExit(GameState::Splash)));
+
+    app.add_system(ui::splash::enter.in_schedule(OnEnter(GameState::SplashTest)));
+    app.add_system(ui::splash::update.in_set(OnUpdate(GameState::SplashTest)));
+    app.add_system(ui::splash::exit.in_schedule(OnExit(GameState::SplashTest)));
+
     // Fixed frame rate systems
     app.add_systems(().in_schedule(CoreSchedule::FixedUpdate));
 
@@ -49,6 +63,8 @@ fn main() {
     app.add_systems((ui::stats::update_stats,));
 
     app.run();
+
+    Ok(())
 }
 
 fn bevy_plugins(settings: &GameSettings) -> PluginGroupBuilder {

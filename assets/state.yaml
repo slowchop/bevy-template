@@ -1,37 +1,43 @@
-- id: Splash
+Splash:
   display: Splash
-  asset: 'menus/splash.jpg'
+  asset: 'menus/splash.png'
+  ms: 2000
+  next: SplashTest
+
+SplashTest:
+  display: Splash
+  asset: 'menus/splash.png'
   ms: 2000
   next: MainMenu
 
-- id: MainMenu
+MainMenu:
   display: Menu
   logo: 'menus/logo.png'
-  text: 'Main Menu'
+  background: 'menus/background.png'
+  title: 'Main Menu'
   items:
-    - text: Play
-      next: SkillSelect
-    - text: Settings
-      next: Settings
-    - text: Credits
-      next: Credits
-    - text: Exit
+    - display: Text
+      text: Play
+      next: Game
+    - display: Text
+      text: Exit
       next: Exit
+      wasm_only: true
 
-- id: SkillSelect
-  display: Menu
-  logo: 'menus/logo.png'
-  text: 'Select your skill level'
-  items:
-    - id: Easy
-      text: Easy
-      next: Game
-    - id: Medium
-      text: Medium
-      next: Game
-    - id: Hard
-      text: Hard
-      next: Game
-    - layout: break
-    - text: Back
-      next: MainMenu
+#- state: SkillSelect
+#  display: Menu
+#  logo: 'menus/logo.png'
+#  text: 'Select your skill level'
+#  items:
+#    - id: Easy
+#      text: Easy
+#      next: Game
+#    - id: Medium
+#      text: Medium
+#      next: Game
+#    - id: Hard
+#      text: Hard
+#      next: Game
+#    - layout: break
+#    - text: Back
+#      next: MainMenu

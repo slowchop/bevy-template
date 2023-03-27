@@ -1,52 +1,71 @@
 use bevy::prelude::*;
+use bevy::utils::HashMap;
+use color_eyre::Result;
+use serde::{Deserialize, Serialize};
 
 /// This has to match the assets/state.yaml file.
-#[derive(States, PartialEq, Eq, Debug, Clone, Hash, Default)]
+#[derive(States, PartialEq, Eq, Debug, Clone, Hash, Default, Serialize, Deserialize)]
 pub enum GameState {
     #[default]
     Splash,
+    SplashTest,
     MainMenu,
     Settings,
     Credits,
     Game,
+    Exit,
 }
 
-pub struct StateConfig(Vec<StateItem>);
+#[derive(Resource, Debug, Clone, Serialize, Deserialize, Deref)]
+pub struct StateConfig(HashMap<GameState, StateDisplay>);
 
-pub struct StateItem {
-    state: GameState,
-    display: StateDisplay,
+impl StateConfig {
+    pub fn load_str(yaml_str: &str) -> Result<Self> {
+        Ok(serde_yaml::from_str(yaml_str)?)
+    }
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(tag = "display")]
 pub enum StateDisplay {
+    #[serde(rename = "Splash")]
     Splash(SplashState),
+    #[serde(rename = "Menu")]
     Menu(MenuState),
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SplashState {
-    asset: String,
-    ms: u32,
-    next: GameState,
+    pub asset: String,
+    pub ms: u64,
+    pub next: GameState,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MenuState {
-    background: Option<String>,
-    title: Option<String>,
-    heading: Option<String>,
-    items: Vec<MenuItem>,
+    pub background: Option<String>,
+    pub logo: Option<String>,
+    pub title: Option<String>,
+    pub items: Vec<MenuItem>,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(tag = "display")]
 pub enum MenuItem {
+    #[serde(rename = "Text")]
     Text(MenuTextItem),
+    #[serde(rename = "Layout")]
     Layout(MenuLayoutItem),
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MenuTextItem {
-    text: String,
-    id: Option<String>,
-    next: GameState,
+    pub text: String,
+    pub next: GameState,
+    pub id: Option<String>,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum MenuLayoutItem {
     Break,
 }
