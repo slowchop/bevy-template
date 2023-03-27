@@ -1,0 +1,37 @@
+- id: Splash
+  display: Splash
+  asset: 'menus/splash.jpg'
+  ms: 2000
+  next: MainMenu
+
+- id: MainMenu
+  display: Menu
+  logo: 'menus/logo.png'
+  text: 'Main Menu'
+  items:
+    - text: Play
+      next: SkillSelect
+    - text: Settings
+      next: Settings
+    - text: Credits
+      next: Credits
+    - text: Exit
+      next: Exit
+
+- id: SkillSelect
+  display: Menu
+  logo: 'menus/logo.png'
+  text: 'Select your skill level'
+  items:
+    - id: Easy
+      text: Easy
+      next: Game
+    - id: Medium
+      text: Medium
+      next: Game
+    - id: Hard
+      text: Hard
+      next: Game
+    - layout: break
+    - text: Back
+      next: MainMenu
