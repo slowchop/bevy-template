@@ -2,12 +2,6 @@ Splash:
   display: Splash
   asset: 'menus/splash.png'
   ms: 2000
-  next: SplashTest
-
-SplashTest:
-  display: Splash
-  asset: 'menus/splash.png'
-  ms: 2000
   next: MainMenu
 
 MainMenu:
@@ -22,7 +16,7 @@ MainMenu:
     - display: Text
       text: Exit
       next: Exit
-      wasm_only: true
+      only_wasm: true
 
 #- state: SkillSelect
 #  display: Menu

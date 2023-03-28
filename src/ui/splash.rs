@@ -1,9 +1,13 @@
+use crate::helpers::delete_entities_with_component;
 use crate::state::{GameState, StateConfig, StateDisplay};
 use bevy::prelude::*;
 use std::time::{Duration, Instant};
 
 #[derive(Component, Deref)]
 pub struct EndSplashTime(pub Instant);
+
+#[derive(Component)]
+pub struct SplashComponent;
 
 pub fn enter(
     mut commands: Commands,
@@ -17,14 +21,18 @@ pub fn enter(
     dbg!(splash_state);
     let texture = asset_server.load(&splash_state.asset);
 
-    commands.spawn(SpriteBundle {
-        texture,
-        ..Default::default()
-    });
+    commands
+        .spawn(SpriteBundle {
+            texture,
+            ..Default::default()
+        })
+        .insert(SplashComponent);
 
-    commands.spawn(EndSplashTime(
-        Instant::now() + Duration::from_millis(splash_state.ms),
-    ));
+    commands
+        .spawn(EndSplashTime(
+            Instant::now() + Duration::from_millis(splash_state.ms),
+        ))
+        .insert(SplashComponent);
 }
 
 pub fn update(
@@ -32,10 +40,16 @@ pub fn update(
     mut state: ResMut<State<GameState>>,
     mut next_state: ResMut<NextState<GameState>>,
     end_splash_time: Query<&EndSplashTime>,
+    keyboard_input: Res<Input<KeyCode>>,
 ) {
     let StateDisplay::Splash(splash_state) = state_config.get(&state.0).unwrap() else {
         panic!("{state:?} is not a Splash: {state_config:?}");
     };
+
+    if keyboard_input.get_just_pressed().len() > 0 {
+        next_state.set(splash_state.next.clone());
+        return;
+    }
 
     let end_time = end_splash_time.single();
     if end_time.0 > Instant::now() {
@@ -43,10 +57,4 @@ pub fn update(
     }
 
     next_state.set(splash_state.next.clone());
-}
-
-pub fn exit(mut commands: Commands, mut end_splash_time: Query<Entity, With<EndSplashTime>>) {
-    for entity in end_splash_time.iter() {
-        commands.entity(entity).despawn_recursive();
-    }
 }

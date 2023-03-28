@@ -1,5 +1,8 @@
+use crate::helpers::delete_entities_with_component;
 use crate::settings::GameSettings;
 use crate::state::{GameState, StateConfig};
+use crate::ui::menu::MenuComponent;
+use crate::ui::splash::SplashComponent;
 use bevy::app::PluginGroupBuilder;
 use bevy::prelude::*;
 use bevy::window::{WindowLevel, WindowMode, WindowResolution};
@@ -7,8 +10,10 @@ use bevy::DefaultPlugins;
 use bevy_egui::EguiPlugin;
 use bevy_prototype_debug_lines::DebugLinesPlugin;
 use color_eyre::Result;
+use std::time::Duration;
 
 pub mod controller;
+pub mod helpers;
 pub mod input;
 pub mod settings;
 pub mod setup;
@@ -50,13 +55,19 @@ fn main() -> Result<()> {
 
     app.add_system(ui::splash::enter.in_schedule(OnEnter(GameState::Splash)));
     app.add_system(ui::splash::update.in_set(OnUpdate(GameState::Splash)));
-    app.add_system(ui::splash::exit.in_schedule(OnExit(GameState::Splash)));
+    app.add_system(
+        delete_entities_with_component::<SplashComponent>.in_schedule(OnExit(GameState::Splash)),
+    );
 
-    app.add_system(ui::splash::enter.in_schedule(OnEnter(GameState::SplashTest)));
-    app.add_system(ui::splash::update.in_set(OnUpdate(GameState::SplashTest)));
-    app.add_system(ui::splash::exit.in_schedule(OnExit(GameState::SplashTest)));
+    app.add_system(ui::menu::enter.in_schedule(OnEnter(GameState::MainMenu)));
+    app.add_system(ui::menu::update.in_set(OnUpdate(GameState::MainMenu)));
+    app.add_system(ui::menu::update_visual_selection.in_set(OnUpdate(GameState::MainMenu)));
+    app.add_system(
+        delete_entities_with_component::<MenuComponent>.in_schedule(OnExit(GameState::MainMenu)),
+    );
 
     // Fixed frame rate systems
+    app.insert_resource(FixedTime::new(Duration::from_secs_f32(1.0 / 60.0)));
     app.add_systems(().in_schedule(CoreSchedule::FixedUpdate));
 
     // Video frame rate systems
