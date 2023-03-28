@@ -53,6 +53,10 @@ fn main() -> Result<()> {
 
     app.add_startup_system(ui::stats::setup_stats);
 
+    // Input
+    app.add_startup_system(input::setup);
+    app.add_systems((input::process_keyboard_input,));
+
     app.add_system(ui::splash::enter.in_schedule(OnEnter(GameState::Splash)));
     app.add_system(ui::splash::update.in_set(OnUpdate(GameState::Splash)));
     app.add_system(
@@ -60,7 +64,9 @@ fn main() -> Result<()> {
     );
 
     app.add_system(ui::menu::enter.in_schedule(OnEnter(GameState::MainMenu)));
-    app.add_system(ui::menu::update.in_set(OnUpdate(GameState::MainMenu)));
+    app.add_systems(
+        (ui::menu::update, ui::menu::handle_action_events).in_set(OnUpdate(GameState::MainMenu)),
+    );
     app.add_system(ui::menu::update_visual_selection.in_set(OnUpdate(GameState::MainMenu)));
     app.add_system(
         delete_entities_with_component::<MenuComponent>.in_schedule(OnExit(GameState::MainMenu)),

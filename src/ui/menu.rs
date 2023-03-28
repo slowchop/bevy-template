@@ -1,15 +1,63 @@
-use crate::state::{GameState, MenuItem, MenuState, StateConfig, StateDisplay};
+use crate::input::{Action, ActionEvent, EventState, InputState};
+use crate::state::{
+    GameState, MenuItem, MenuItemDetails, MenuItemId, MenuState, StateConfig, StateDisplay,
+};
+use bevy::input::ButtonState;
 use bevy::prelude::*;
+use bevy::utils::petgraph::visit::Walker;
 use bevy::utils::HashMap;
 use color_eyre::owo_colors::style;
 use std::clone;
+use std::process::id;
 use std::thread::spawn;
 
 #[derive(Resource)]
 pub struct Menu {
-    pub selected: Option<Entity>,
+    pub selected: Option<MenuItemId>,
     pub menu_state: MenuState,
-    pub items_lookup: HashMap<String, Entity>,
+    pub items_lookup: HashMap<MenuItemId, Entity>,
+}
+
+impl Menu {
+    pub fn select_next(&mut self, direction: i8) {
+        let Some(selected) = &self.selected else {
+            warn!("No item selected.");
+            return;
+        };
+
+        let Some(index) = self.menu_state.items.iter().position(|item| item.id.as_ref() == Some(selected)) else {
+            warn!("Selected item not found in menu.");
+            return;
+        };
+        let index = index as i32;
+
+        let mut next_index: i32 = index as i32;
+        loop {
+            next_index += direction as i32;
+
+            if next_index >= self.menu_state.items.len() as i32 {
+                next_index = 0;
+            } else if next_index < 0 {
+                next_index = self.menu_state.items.len() as i32 - 1;
+            }
+
+            if next_index == index {
+                warn!("No other selectable items found.");
+                break;
+            }
+
+            let item = &self.menu_state.items[next_index as usize];
+            if !item.selectable {
+                continue;
+            }
+
+            let Some(id) = &item.id else {
+                continue;
+            };
+
+            self.selected = Some(id.clone());
+        }
+    }
 }
 
 #[derive(Component)]
@@ -81,8 +129,8 @@ pub fn enter(
             }
 
             for menu_item in &menu_state.items {
-                match menu_item {
-                    MenuItem::Text(menu_text_item) => {
+                let maybe_entity = match &menu_item.details {
+                    MenuItemDetails::Text(menu_text_item) => {
                         let entity = parent
                             .spawn(
                                 TextBundle::from_section(
@@ -100,16 +148,23 @@ pub fn enter(
                                 .with_background_color(Color::ORANGE_RED),
                             )
                             .id();
-
-                        if selected.is_none() {
-                            selected = Some(entity);
-                        }
-
-                        if let Some(id) = &menu_text_item.id {
-                            items_lookup.insert(id.clone(), entity);
-                        }
+                        Some(entity)
                     }
-                    MenuItem::Layout(_) => {}
+                    MenuItemDetails::Layout(_) => {
+                        warn!("Layouts are not yet supported in menus.");
+                        None
+                    }
+                };
+
+                if let Some(id) = &menu_item.id {
+                    if selected.is_none() {
+                        selected = Some(id.clone());
+                    }
+                    let Some(entity) = maybe_entity else {
+                        continue;
+                    };
+
+                    items_lookup.insert(id.clone(), entity);
                 }
             }
         });
@@ -121,12 +176,19 @@ pub fn enter(
     });
 }
 
-pub fn update_visual_selection(
-    menu_items: Res<Menu>,
-    mut items: Query<(Entity, &mut BackgroundColor)>,
-) {
+pub fn update_visual_selection(menu: Res<Menu>, mut items: Query<(Entity, &mut BackgroundColor)>) {
+    let Some(selected_id) = &menu.selected else {
+        warn!("Can't change selection, there is no selection.");
+        return;
+    };
+
+    let Some(selected_entity) = menu.items_lookup.get(selected_id) else {
+        warn!("Can't change selection, no menu item with ID {selected_id:?} found.");
+        return;
+    };
+
     for (entity, mut background_color) in items.iter_mut() {
-        if Some(entity) == menu_items.selected {
+        if entity == *selected_entity {
             background_color.0 = Color::ORANGE_RED.into();
         } else {
             background_color.0 = Color::NONE.into();
@@ -134,7 +196,27 @@ pub fn update_visual_selection(
     }
 }
 
-pub fn action_events() {}
+pub fn handle_action_events(
+    mut menu: ResMut<Menu>,
+    mut action_event_reader: EventReader<ActionEvent>,
+) {
+    for event in action_event_reader.iter() {
+        // We only care about just_pressed state.
+        if event.state != EventState::Released {
+            continue;
+        }
+
+        match event.action {
+            Action::Down => {
+                menu.select_next(1);
+            }
+            Action::Up => {
+                menu.select_next(-1);
+            }
+            _ => {}
+        }
+    }
+}
 
 pub fn update() {}
 

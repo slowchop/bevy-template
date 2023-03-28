@@ -50,19 +50,34 @@ pub struct MenuState {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MenuItem {
+    pub id: Option<MenuItemId>,
+    #[serde(default = "default_selectable")]
+    pub selectable: bool,
+    #[serde(flatten)]
+    pub details: MenuItemDetails,
+}
+
+fn default_selectable() -> bool {
+    true
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "display")]
-pub enum MenuItem {
+pub enum MenuItemDetails {
     #[serde(rename = "Text")]
     Text(MenuTextItem),
     #[serde(rename = "Layout")]
     Layout(MenuLayoutItem),
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, Deref, Hash, PartialEq, Eq)]
+pub struct MenuItemId(String);
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MenuTextItem {
     pub text: String,
     pub next: GameState,
-    pub id: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

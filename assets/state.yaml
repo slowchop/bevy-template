@@ -11,9 +11,11 @@ MainMenu:
   title: 'Main Menu'
   items:
     - display: Text
+      id: Play
       text: Play
       next: Game
     - display: Text
+      id: Exit
       text: Exit
       next: Exit
       only_wasm: true
