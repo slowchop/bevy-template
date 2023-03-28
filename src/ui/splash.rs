@@ -1,7 +1,8 @@
 use crate::helpers::delete_entities_with_component;
 use crate::state::{GameState, StateConfig, StateDisplay};
 use bevy::prelude::*;
-use std::time::{Duration, Instant};
+use bevy::utils::Instant;
+use std::time::Duration;
 
 #[derive(Component, Deref)]
 pub struct EndSplashTime(pub Instant);
@@ -10,6 +11,7 @@ pub struct EndSplashTime(pub Instant);
 pub struct SplashComponent;
 
 pub fn enter(
+    time: Res<Time>,
     mut commands: Commands,
     state_config: Res<StateConfig>,
     mut state: ResMut<State<GameState>>,
@@ -30,12 +32,13 @@ pub fn enter(
 
     commands
         .spawn(EndSplashTime(
-            Instant::now() + Duration::from_millis(splash_state.ms),
+            time.startup() + time.elapsed() + Duration::from_millis(splash_state.ms),
         ))
         .insert(SplashComponent);
 }
 
 pub fn update(
+    time: Res<Time>,
     state_config: Res<StateConfig>,
     mut state: ResMut<State<GameState>>,
     mut next_state: ResMut<NextState<GameState>>,
@@ -52,7 +55,7 @@ pub fn update(
     }
 
     let end_time = end_splash_time.single();
-    if end_time.0 > Instant::now() {
+    if end_time.0 > time.startup() + time.elapsed() {
         return;
     }
 

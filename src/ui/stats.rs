@@ -1,9 +1,9 @@
-use std::collections::BTreeMap;
-use std::time::Duration;
-use bevy::diagnostic::{Diagnostics, FrameTimeDiagnosticsPlugin};
-use bevy::prelude::*;
 use crate::controller::LocalController;
 use crate::settings::GameSettings;
+use bevy::diagnostic::{Diagnostics, FrameTimeDiagnosticsPlugin};
+use bevy::prelude::*;
+use std::collections::BTreeMap;
+use std::time::Duration;
 
 #[derive(Component)]
 pub struct StatsText;
@@ -15,17 +15,17 @@ pub fn setup_stats(mut commands: Commands, asset_server: Res<AssetServer>) {
             font_size: 30.0,
             color: Color::WHITE,
         })])
-            .with_style(Style {
-                position_type: PositionType::Absolute,
-                position: UiRect {
-                    top: Val::Px(0.0),
-                    right: Val::Px(7.0),
-                    ..Default::default()
-                },
-                align_content: AlignContent::FlexEnd,
-                // align_items: AlignItems::FlexEnd,
+        .with_style(Style {
+            position_type: PositionType::Absolute,
+            position: UiRect {
+                top: Val::Px(0.0),
+                right: Val::Px(7.0),
                 ..Default::default()
-            }),
+            },
+            // align_content: AlignContent::FlexEnd,
+            // align_items: AlignItems::FlexEnd,
+            ..Default::default()
+        }),
         StatsText,
     ));
 }
