@@ -56,6 +56,7 @@ impl Menu {
             };
 
             self.selected = Some(id.clone());
+            break;
         }
     }
 }
@@ -65,6 +66,9 @@ pub struct MenuComponent;
 
 #[derive(Component)]
 pub struct Selected;
+
+#[derive(Component)]
+pub struct Selectable;
 
 pub fn enter(
     mut commands: Commands,
@@ -129,26 +133,32 @@ pub fn enter(
             }
 
             for menu_item in &menu_state.items {
+                let mut selectable = None;
+                if menu_item.selectable {
+                    if let Some(id) = &menu_item.id {
+                        selectable = Some(id);
+                    };
+                }
+
                 let maybe_entity = match &menu_item.details {
                     MenuItemDetails::Text(menu_text_item) => {
-                        let entity = parent
-                            .spawn(
-                                TextBundle::from_section(
-                                    &menu_text_item.text,
-                                    TextStyle {
-                                        font: asset_server.load("typefaces/monogram-extended.ttf"),
-                                        font_size: 80.0,
-                                        color: Color::rgb(0.9, 0.9, 0.9),
-                                    },
-                                )
-                                .with_style(Style {
-                                    padding: UiRect::all(Val::Px(50.0)),
-                                    ..default()
-                                })
-                                .with_background_color(Color::ORANGE_RED),
+                        let mut entity = parent.spawn(
+                            TextBundle::from_section(
+                                &menu_text_item.text,
+                                TextStyle {
+                                    font: asset_server.load("typefaces/monogram-extended.ttf"),
+                                    font_size: 80.0,
+                                    color: Color::rgb(0.9, 0.9, 0.9),
+                                },
                             )
-                            .id();
-                        Some(entity)
+                            .with_style(Style { ..default() }),
+                        );
+
+                        if selectable.is_some() {
+                            entity.insert(Selectable);
+                        }
+
+                        Some(entity.id())
                     }
                     MenuItemDetails::Layout(_) => {
                         warn!("Layouts are not yet supported in menus.");
@@ -156,16 +166,20 @@ pub fn enter(
                     }
                 };
 
-                if let Some(id) = &menu_item.id {
-                    if selected.is_none() {
-                        selected = Some(id.clone());
-                    }
-                    let Some(entity) = maybe_entity else {
-                        continue;
-                    };
+                let Some(entity) = maybe_entity else {
+                    continue;
+                };
 
-                    items_lookup.insert(id.clone(), entity);
+                let Some(id) = selectable else {
+                    continue;
+                };
+
+                // Select the first selectable item.
+                if selected.is_none() {
+                    selected = Some(id.clone());
                 }
+
+                items_lookup.insert(id.clone(), entity);
             }
         });
 
@@ -176,7 +190,10 @@ pub fn enter(
     });
 }
 
-pub fn update_visual_selection(menu: Res<Menu>, mut items: Query<(Entity, &mut BackgroundColor)>) {
+pub fn update_visual_selection(
+    menu: Res<Menu>,
+    mut items: Query<(Entity, &mut BackgroundColor), With<Selectable>>,
+) {
     let Some(selected_id) = &menu.selected else {
         warn!("Can't change selection, there is no selection.");
         return;
