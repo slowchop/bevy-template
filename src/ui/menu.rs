@@ -59,6 +59,23 @@ impl Menu {
             break;
         }
     }
+
+    pub fn on_confirm_game_state(&self) -> Option<GameState> {
+        let Some(selected) = &self.selected else {
+            warn!("No item selected.");
+            return None;
+        };
+
+        let Some(item) = self.menu_state.items.iter().find(|item| item.id.as_ref() == Some(selected)) else {
+            warn!("Selected item not found in menu.");
+            return None;
+        };
+
+        match &item.details {
+            MenuItemDetails::Text(menu_text_item) => Some(menu_text_item.next.clone()),
+            MenuItemDetails::Layout(_) => None,
+        }
+    }
 }
 
 #[derive(Component)]
@@ -214,16 +231,24 @@ pub fn update_visual_selection(
 }
 
 pub fn handle_action_events(
+    mut next_state: ResMut<NextState<GameState>>,
     mut menu: ResMut<Menu>,
     mut action_event_reader: EventReader<ActionEvent>,
 ) {
     for event in action_event_reader.iter() {
-        // We only care about just_pressed state.
-        if event.state != EventState::Released {
+        if event.state != EventState::Pressed {
             continue;
         }
 
         match event.action {
+            Action::Confirm => {
+                let Some(state) = menu.on_confirm_game_state() else {
+                    warn!("Can't confirm menu, no next state.");
+                    continue;
+                };
+
+                next_state.set(state);
+            }
             Action::Down => {
                 menu.select_next(1);
             }
