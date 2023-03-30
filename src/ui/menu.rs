@@ -4,8 +4,10 @@ use crate::state::{
 };
 use bevy::input::ButtonState;
 use bevy::prelude::*;
+use bevy::ui::FocusPolicy;
 use bevy::utils::petgraph::visit::Walker;
 use bevy::utils::HashMap;
+use bevy::window::PrimaryWindow;
 use color_eyre::owo_colors::style;
 use std::clone;
 use std::process::id;
@@ -173,6 +175,8 @@ pub fn enter(
 
                         if selectable.is_some() {
                             entity.insert(Selectable);
+                            entity.insert(Interaction::None);
+                            entity.insert(FocusPolicy::Block);
                         }
 
                         Some(entity.id())
@@ -257,6 +261,14 @@ pub fn handle_action_events(
             }
             _ => {}
         }
+    }
+}
+
+pub fn handle_interaction_events(
+    changed_interactions: Query<(Entity, &Interaction), Changed<Interaction>>,
+) {
+    for (entity, interaction) in changed_interactions.iter() {
+        dbg!(&entity, &interaction);
     }
 }
 

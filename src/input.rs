@@ -1,6 +1,7 @@
 use crate::state;
 use crate::state::MenuState;
 use bevy::input::keyboard::KeyboardInput;
+use bevy::input::mouse::MouseButtonInput;
 use bevy::input::ButtonState;
 use bevy::prelude::*;
 use bevy::utils::HashMap;
@@ -68,7 +69,7 @@ pub fn setup(mut commands: Commands) {
     keyboard_input_map.insert(KeyCode::Q, Action::Special);
 
     mouse_button_input_map.insert(MouseButton::Left, Action::PrimaryAction);
-    mouse_button_input_map.insert(MouseButton::Right, Action::PrimaryAction);
+    mouse_button_input_map.insert(MouseButton::Right, Action::SecondaryAction);
 
     commands.insert_resource(KeyboardInputMap(keyboard_input_map));
     commands.insert_resource(MouseButtonInputMap(mouse_button_input_map));
@@ -125,5 +126,51 @@ pub fn process_keyboard_input(
         });
 
         info!("Keyboard event: {:?}", event);
+    }
+}
+
+pub fn process_mouse_input(
+    mut input_states: ResMut<InputStates>,
+    mouse_button_input_map: Res<MouseButtonInputMap>,
+    mut mouse_button_events: EventReader<MouseButtonInput>,
+    mut input_action_writer: EventWriter<ActionEvent>,
+) {
+    // Set all "just_pressed" and "just_released" to false.
+    for state in input_states.values_mut() {
+        state.just_pressed = false;
+        state.just_released = false;
+    }
+
+    for event in mouse_button_events.iter() {
+        let Some(action) = mouse_button_input_map.get(&event.button) else {
+            continue;
+        };
+        let (input_state, event_state) = match event.state {
+            ButtonState::Pressed => (
+                InputState {
+                    is_pressed: true,
+                    just_pressed: true,
+                    just_released: false,
+                },
+                EventState::Pressed,
+            ),
+            ButtonState::Released => (
+                InputState {
+                    is_pressed: false,
+                    just_pressed: false,
+                    just_released: true,
+                },
+                EventState::Released,
+            ),
+        };
+
+        input_states.insert(*action, input_state);
+
+        input_action_writer.send(ActionEvent {
+            action: *action,
+            state: event_state,
+        });
+
+        info!("Mouse event: {:?}", event);
     }
 }
