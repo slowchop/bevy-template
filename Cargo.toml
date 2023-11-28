@@ -7,7 +7,9 @@ edition = "2021"
 default = ["bevy/dynamic_linking"]
 
 [dependencies]
-bevy = "0.11.2"
+bevy = "0.12.0"
+slowchop_console = "0.1.0"
+leafwing-input-manager = "0.11.1"
 
 # Enable a small amount of optimization in debug mode
 [profile.dev]

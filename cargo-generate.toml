@@ -1,0 +1,6 @@
+[template]
+ignore = [
+    ".idea",
+    ".git",
+    "dev",
+]
