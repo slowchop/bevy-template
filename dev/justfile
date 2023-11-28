@@ -11,4 +11,4 @@ sync:
         --exclude .cargo \
         ../../test-bevy-template/ ..
 
-    fd . .. -E dev -x "sed -i '' 's/test-bevy-template/{{{{ project-name }}/g'"
+    fd . .. -t f -E dev -x sed -i '' 's/test-bevy-template/{{{{ project-name }}/g'

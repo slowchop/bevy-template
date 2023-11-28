@@ -25,7 +25,7 @@ fn main() {
             DefaultPlugins.set(WindowPlugin {
                 primary_window: Some(Window {
                     position: WindowPosition::Centered(MonitorSelection::Current),
-                    title: "{{project-name}}".to_string(),
+                    title: "{{ project-name }}".to_string(),
                     fit_canvas_to_parent: true,
                     ..default()
                 }),
