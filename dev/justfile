@@ -9,6 +9,6 @@ sync:
         --exclude target \
         --exclude Cargo.lock \
         --exclude .cargo \
-        ../../test-bevy-template/ .
+        ../../test-bevy-template/ ..
 
     find . -type f -exec sed -i 's/test-bevy-template/{{{{ project-name }}/g' {} \;
