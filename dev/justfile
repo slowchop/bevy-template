@@ -1,8 +1,14 @@
 create:
-    cd .. && cargo-generate bevy-template --name test-bevy-template
+    cd ../.. && cargo generate bevy-template -n test-bevy-template
 
 # Copy back from test-bevy-template, replacing the existing files
 # and replace "test-bevy-template" with "{{ project-name }}"
 sync:
-    rsync -r --exclude .git --exclude target --exclude Cargo.lock --exclude .cargo ../test-bevy-template/ .
-    find . -type f -exec sed -i 's/test-bevy-template/{{ project-name }}/g' {} \;
+    rsync -r \
+        --exclude .git \
+        --exclude target \
+        --exclude Cargo.lock \
+        --exclude .cargo \
+        ../../test-bevy-template/ .
+
+    find . -type f -exec sed -i 's/test-bevy-template/{{{{ project-name }}/g' {} \;
