@@ -1,11 +1,13 @@
 use bevy::prelude::*;
+use slowchop_console::{Actions, ConsolePlugin};
+use leafwing_input_manager::prelude::{Actionlike, InputManagerPlugin};
 
-#[derive(Action, Clone, Debug)]
+#[derive(Actions, Event, Clone, Debug)]
 enum ConsoleAction {
     Quit,
 }
 
-#[derive(ActionLike, Clone, Debug)]
+#[derive(Actionlike, PartialEq, Eq, Hash, Clone, Copy, Debug, Reflect)]
 enum KeyAction {
     Up,
     Down,
@@ -44,7 +46,7 @@ fn setup_camera(mut commands: Commands) {
 }
 
 fn handle_console_actions(mut console_actions: EventReader<ConsoleAction>) {
-    for action in console_actions.iter() {
+    for action in console_actions.read() {
         match action {
             ConsoleAction::Quit => std::process::exit(0),
         }
