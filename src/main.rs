@@ -4,7 +4,7 @@ mod game;
 mod input;
 mod menus;
 mod splash;
-mod ui;
+mod style;
 
 use bevy::input::common_conditions::input_toggle_active;
 use bevy::log::LogPlugin;
