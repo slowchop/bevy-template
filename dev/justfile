@@ -9,7 +9,11 @@ sync:
         --exclude target \
         --exclude Cargo.lock \
         --exclude .cargo \
+        --exclude out \
         ../../test-bevy-template/ ..
 
-    fd . .. -t f -E dev -E assets -x sed -i '' \
-        's/test-bevy-template/{{{{ project-name }}/g'
+    fd . .. -t f \
+        -E dev \
+        -E out \
+        -E assets \
+        -x sed -i '' 's/test-bevy-template/{{{{ project-name }}/g'
