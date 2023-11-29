@@ -1,5 +1,6 @@
 use crate::GameState;
 use bevy::prelude::*;
+use bevy_asset_loader::asset_collection::AssetCollection;
 use bevy_asset_loader::prelude::*;
 
 #[derive(AssetCollection, Resource)]
@@ -31,18 +32,21 @@ impl Plugin for AssetsPlugin {
         );
         app.add_collection_to_loading_state::<_, SplashAssets>(GameState::LoadingSplashAssets);
 
-        // app.add_dynamic_collection_to_loading_state::<_, MenuAssets>(
-        //     GameState::SplashWhileLoadingAssets,
-        //     "menu.assets.ron",
-        // );
-        // app.add_dynamic_collection_to_loading_state::<_, GameAssets>(
-        //     GameState::SplashWhileLoadingAssets,
-        //     "game.assets.ron",
-        // );
-
-        // Rest of the assets...
-        // app.add_loading_state(
-        //     LoadingState::new(GameState::LoadingAssets).continue_to_state(GameState::Menus),
-        // );
+        // The rest of the assets.
+        // TODO: Block on menu loading here, and trigger a background load of the game assets.
+        app.add_loading_state(
+            LoadingState::new(GameState::SplashWhileLoadingAssets)
+                .continue_to_state(GameState::Menus),
+        );
+        app.add_dynamic_collection_to_loading_state::<_, StandardDynamicAssetCollection>(
+            GameState::SplashWhileLoadingAssets,
+            "menu.assets.ron",
+        );
+        app.add_collection_to_loading_state::<_, MenuAssets>(GameState::SplashWhileLoadingAssets);
+        app.add_dynamic_collection_to_loading_state::<_, StandardDynamicAssetCollection>(
+            GameState::SplashWhileLoadingAssets,
+            "game.assets.ron",
+        );
+        app.add_collection_to_loading_state::<_, GameAssets>(GameState::SplashWhileLoadingAssets);
     }
 }

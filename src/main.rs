@@ -2,14 +2,13 @@ mod assets;
 mod console;
 mod game;
 mod input;
+mod menus;
 mod splash;
 mod ui;
 
-use crate::assets::SplashAssets;
 use bevy::input::common_conditions::input_toggle_active;
 use bevy::log::LogPlugin;
 use bevy::prelude::*;
-use bevy_asset_loader::prelude::{LoadingState, LoadingStateAppExt};
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use console::ConsoleAction;
 use input::KeyAction;
@@ -76,6 +75,7 @@ fn main() {
         assets::AssetsPlugin,
         console::ConsoleHandlerPlugin,
         splash::SplashPlugin,
+        menus::MenusPlugin,
         game::GamePlugin,
     ));
 
