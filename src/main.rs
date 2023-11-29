@@ -5,9 +5,11 @@ mod input;
 mod splash;
 mod ui;
 
+use crate::assets::SplashAssets;
 use bevy::input::common_conditions::input_toggle_active;
 use bevy::log::LogPlugin;
 use bevy::prelude::*;
+use bevy_asset_loader::prelude::{LoadingState, LoadingStateAppExt};
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use console::ConsoleAction;
 use input::KeyAction;
@@ -37,8 +39,7 @@ pub enum GameState {
 fn main() {
     let console_plugin = ConsolePlugin::<ConsoleAction>::default();
 
-    let default_filter =
-        "debug,bevy_app=info,bevy_ecs=info,wgpu=error,naga=warn,winit=info,gilrs=info".to_string();
+    let default_filter = "info,wgpu=error,naga=warn,winit=info,gilrs=info".to_string();
     let filter_layer = EnvFilter::try_from_default_env()
         .or_else(|_| EnvFilter::try_new(&default_filter))
         .unwrap();
@@ -51,11 +52,12 @@ fn main() {
 
     let mut app = App::new();
 
+    app.add_state::<GameState>();
+
     app.add_plugins((
         DefaultPlugins
             .set(WindowPlugin {
                 primary_window: Some(Window {
-                    position: WindowPosition::Centered(MonitorSelection::Current),
                     title: "{{ project-name }}".to_string(),
                     fit_canvas_to_parent: true,
                     ..default()
@@ -77,7 +79,6 @@ fn main() {
         game::GamePlugin,
     ));
 
-    app.add_state::<GameState>();
     app.add_systems(Startup, setup_2d_camera);
 
     app.add_systems(Update, debug);
