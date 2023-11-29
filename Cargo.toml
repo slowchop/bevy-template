@@ -10,7 +10,7 @@ default = ["bevy/dynamic_linking"]
 bevy = "0.12.0"
 
 # Bevy plugins
-slowchop_console = { version = "0.1.1" }
+slowchop_console = { version = "0.1.2"}
 bevy-ui-dsl = "0.7.1"
 leafwing-input-manager = "0.11.1"
 bevy_asset_loader = { version = "0.18.0" , features = ["standard_dynamic_assets"] }
