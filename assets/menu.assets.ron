@@ -1,0 +1,18 @@
+({
+    "image.menu-background": File (
+        path: "menu-background.png",
+    ),
+    "image.player": TextureAtlas (
+        path: "images/female_adventurer_sheet.png",
+        tile_size_x: 96.,
+        tile_size_y: 99.,
+        columns: 8,
+        rows: 1
+    ),
+    "image.tree": File (
+        path: "images/tree.png",
+    ),
+    "sounds.background": File (
+        path: "audio/background.ogg",
+    ),
+})

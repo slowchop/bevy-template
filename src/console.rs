@@ -3,13 +3,21 @@ use bevy::prelude::*;
 use slowchop_console::Actions;
 use std::str::FromStr;
 
+pub struct ConsoleHandlerPlugin;
+
+impl Plugin for ConsoleHandlerPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_systems(Update, handle_console_actions);
+    }
+}
+
 #[derive(Actions, Event, Clone, Debug)]
 pub enum ConsoleAction {
     Quit,
     State(String),
 }
 
-pub fn handle_console_actions(
+fn handle_console_actions(
     mut console_actions: EventReader<ConsoleAction>,
     mut next_state: ResMut<NextState<GameState>>,
 ) {
