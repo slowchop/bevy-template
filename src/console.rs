@@ -1,4 +1,5 @@
 use crate::GameState;
+use bevy::app::AppExit;
 use bevy::prelude::*;
 use slowchop_console::Actions;
 use std::str::FromStr;
@@ -20,10 +21,13 @@ pub enum ConsoleAction {
 fn handle_console_actions(
     mut console_actions: EventReader<ConsoleAction>,
     mut next_state: ResMut<NextState<GameState>>,
+    mut app_exit_writer: EventWriter<AppExit>,
 ) {
     for action in console_actions.read() {
         match action {
-            ConsoleAction::Quit => std::process::exit(0),
+            ConsoleAction::Quit => {
+                app_exit_writer.send(AppExit);
+            }
             ConsoleAction::State(new_state) => match GameState::from_str(new_state) {
                 Ok(state) => {
                     info!("State change: {:?}", state);
