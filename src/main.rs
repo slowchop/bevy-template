@@ -81,15 +81,9 @@ fn main() {
 
     app.add_systems(Startup, setup_2d_camera);
 
-    app.add_systems(Update, debug);
-
     app.run();
 }
 
 fn setup_2d_camera(mut commands: Commands) {
     commands.spawn(Camera2dBundle::default());
-}
-
-fn debug(state: Res<State<GameState>>) {
-    info!("Current state: {:?}", state);
 }
