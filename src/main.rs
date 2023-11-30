@@ -12,7 +12,7 @@ use bevy::log::LogPlugin;
 use bevy::prelude::*;
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use console::ConsoleAction;
-use input::KeyAction;
+use input::GameAction;
 use leafwing_input_manager::prelude::{Actionlike, InputManagerPlugin};
 use slowchop_console::ConsolePlugin;
 use strum::EnumString;
@@ -78,7 +78,7 @@ fn main() {
         // .disable::<LogPlugin>(),
         WorldInspectorPlugin::new().run_if(input_toggle_active(false, KeyCode::P)),
         console_plugin,
-        InputManagerPlugin::<KeyAction>::default(),
+        InputManagerPlugin::<GameAction>::default(),
     ));
 
     // Internal Plugins

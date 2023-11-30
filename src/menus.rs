@@ -63,9 +63,9 @@ fn setup(mut commands: Commands, assets: Res<AssetServer>, menu_assets: Res<Menu
 
     rooti(
         (style::node_root, style::node_menu),
-        &assets,
+        &*assets,
         &mut commands,
-        Name::new("Menu Root"),
+        (Name::new("Menu Root"), Menus),
         |p| {
             texti(
                 "{{ project-name }}",
@@ -112,12 +112,14 @@ fn cleanup(mut commands: Commands, query: Query<Entity, With<Menus>>) {
 
 fn main_menu_handler(
     interactions: Query<(&MainMenu, &Interaction), Changed<Interaction>>,
+    mut state: ResMut<NextState<GameState>>,
     mut app_exit_writer: EventWriter<AppExit>,
 ) {
     for (menu, interaction) in &interactions {
         match (menu, interaction) {
             (MainMenu::Play, Interaction::Pressed) => {
                 info!("Play clicked");
+                state.set(GameState::Playing);
             }
             (MainMenu::Credits, Interaction::Pressed) => {
                 info!("Credits clicked");

@@ -18,7 +18,7 @@ pub struct MenuAssets {
 #[derive(AssetCollection, Resource)]
 pub struct GameAssets {
     #[asset(key = "player")]
-    player: Handle<Image>,
+    pub player: Handle<Image>,
 }
 
 pub struct AssetsPlugin;
