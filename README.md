@@ -29,7 +29,7 @@ This is a template for a [Bevy](https://bevyengine.org/) game.
   - A very basic main menu.
   - A very basic in game UI (TODO).
 - A Quake style console using [slowchop_console](https://github.com/slowchop/console).
-  - `slowchop_console` is brand new, don't use this for anything too important.
+  - ⚠️ `slowchop_console` is brand new, don't use this for anything too important.
 - Keyboard actions using [leafwing-input-manager](https://github.com/Leafwing-Studios/leafwing-input-manager/).
 - Inspect your entities (via the P key) with [bevy-inspector-egui](https://github.com/jakobhellermann/bevy-inspector-egui).
 

@@ -1,5 +1,6 @@
 mod assets;
 mod console;
+mod fullscreen;
 mod game;
 mod input;
 mod menus;
@@ -84,6 +85,7 @@ fn main() {
     // Internal Plugins
     app.add_plugins((
         assets::AssetsPlugin,
+        fullscreen::FullscreenPlugin,
         console::ConsoleHandlerPlugin,
         splash::SplashPlugin,
         menus::MenusPlugin,
