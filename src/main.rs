@@ -36,54 +36,80 @@ pub enum GameState {
 }
 
 fn main() {
-    let console_plugin = ConsolePlugin::<ConsoleAction>::default();
+    // let console_plugin = ConsolePlugin::<ConsoleAction>::default();
 
-    let default_filter = "info,wgpu=error,naga=warn,winit=info,gilrs=info".to_string();
-    let filter_layer = EnvFilter::try_from_default_env()
-        .or_else(|_| EnvFilter::try_new(&default_filter))
-        .unwrap();
-
-    tracing_subscriber::registry()
-        .with(filter_layer)
-        .with(tracing_subscriber::fmt::Layer::new().with_ansi(true))
-        .with(console_plugin.clone())
-        .init();
+    // let default_filter = "info,wgpu=error,naga=warn,winit=info,gilrs=info".to_string();
+    // let filter_layer = EnvFilter::try_from_default_env()
+    //     .or_else(|_| EnvFilter::try_new(&default_filter))
+    //     .unwrap();
+    //
+    // tracing_subscriber::registry()
+    //     .with(filter_layer)
+    //     .with(
+    //         tracing_subscriber::fmt::Layer::new()
+    //             .with_ansi(true)
+    //             .without_time(), // with_time (or default) won't run because time is not implemented for wasm apparently.
+    //     )
+    //     .with(console_plugin.clone())
+    //     .init();
 
     let mut app = App::new();
 
     app.add_state::<GameState>();
 
     app.add_plugins((
-        DefaultPlugins
-            .set(WindowPlugin {
-                primary_window: Some(Window {
-                    title: "{{ project-name }}".to_string(),
-                    fit_canvas_to_parent: true,
-                    ..default()
-                }),
+        DefaultPlugins.set(WindowPlugin {
+            primary_window: Some(Window {
+                title: "{{ project-name }}".to_string(),
+                // fit_canvas_to_parent: true,
+                canvas: Some("#bevy".to_owned()),
+                // Tells wasm not to override default event handling, like F5 and Ctrl+R
+                prevent_default_event_handling: false,
                 ..default()
-            })
-            .build()
-            .disable::<LogPlugin>(),
+            }),
+            ..default()
+        }),
+        // Disabling LogPlugin makes wasm logging not work.
+        // .build()
+        // .disable::<LogPlugin>(),
         WorldInspectorPlugin::new().run_if(input_toggle_active(false, KeyCode::F1)),
-        console_plugin,
-        InputManagerPlugin::<KeyAction>::default(),
+        // console_plugin,
+        // InputManagerPlugin::<KeyAction>::default(),
     ));
 
     // Internal Plugins
     app.add_plugins((
         assets::AssetsPlugin,
-        console::ConsoleHandlerPlugin,
+        // console::ConsoleHandlerPlugin,
         splash::SplashPlugin,
         menus::MenusPlugin,
         game::GamePlugin,
     ));
 
-    app.add_systems(Startup, setup_2d_camera);
+    app.add_systems(Startup, (setup_2d_camera, debug_stuff));
 
     app.run();
 }
 
 fn setup_2d_camera(mut commands: Commands) {
     commands.spawn(Camera2dBundle::default());
+    info!("setup 2d camera");
+
+    commands.spawn(Text2dBundle {
+        text: Text::from_section(
+            "{{ project-name }}".to_string(),
+            TextStyle {
+                font_size: 100.,
+                ..default()
+            },
+        ),
+        transform: Transform::from_translation(Vec3::new(0., 0., 1.)),
+        ..default()
+    });
+}
+
+fn debug_stuff(windows: Query<&Window>) {
+    for window in &windows {
+        info!("window: {:#?}", window);
+    }
 }
