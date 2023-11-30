@@ -2,6 +2,7 @@ use crate::GameState;
 use bevy::prelude::*;
 use bevy_asset_loader::asset_collection::AssetCollection;
 use bevy_asset_loader::prelude::*;
+use bevy_kira_audio::{Audio, AudioSource};
 
 #[derive(AssetCollection, Resource)]
 pub struct SplashAssets {
@@ -19,6 +20,9 @@ pub struct MenuAssets {
 pub struct GameAssets {
     #[asset(key = "player")]
     pub player: Handle<Image>,
+
+    #[asset(key = "walk-sound")]
+    pub walk_sound: Handle<AudioSource>,
 }
 
 pub struct AssetsPlugin;

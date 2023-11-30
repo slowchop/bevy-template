@@ -1,5 +1,8 @@
 ({
     "player": File (
-        path: "player.png"
+        path: "player.png",
+    ),
+    "walk-sound": File (
+        path: "craft.ogg",
     ),
 })

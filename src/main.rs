@@ -12,6 +12,7 @@ use bevy::input::common_conditions::input_toggle_active;
 use bevy::log::LogPlugin;
 use bevy::prelude::*;
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
+use bevy_kira_audio::{Audio, AudioControl, AudioPlugin};
 use console::ConsoleAction;
 use input::GameAction;
 use leafwing_input_manager::prelude::{Actionlike, InputManagerPlugin};
@@ -80,6 +81,7 @@ fn main() {
         WorldInspectorPlugin::new().run_if(input_toggle_active(false, KeyCode::P)),
         console_plugin,
         InputManagerPlugin::<GameAction>::default(),
+        AudioPlugin,
     ));
 
     // Internal Plugins
@@ -92,7 +94,10 @@ fn main() {
         game::GamePlugin,
     ));
 
-    app.add_systems(Startup, (setup_2d_camera, debug_stuff));
+    app.add_systems(
+        Startup,
+        (setup_2d_camera, start_background_audio, debug_stuff),
+    );
 
     app.run();
 }
@@ -106,4 +111,8 @@ fn debug_stuff(windows: Query<&Window>) {
     for window in &windows {
         info!("window: {:#?}", window);
     }
+}
+
+fn start_background_audio(asset_server: Res<AssetServer>, audio: Res<Audio>) {
+    audio.play(asset_server.load("beat-thee.mp3")).looped();
 }
