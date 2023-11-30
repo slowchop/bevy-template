@@ -14,11 +14,10 @@ impl Plugin for SplashPlugin {
 #[derive(Component, Debug)]
 pub struct Splash;
 
-fn setup(mut commands: Commands, asset_server: Res<AssetServer>, splash_assets: Res<SplashAssets>) {
+fn setup(mut commands: Commands, splash_assets: Res<SplashAssets>) {
     info!("splash setup");
 
     let texture = splash_assets.loading_splash.clone();
-    // let texture = asset_server.load("bevy.png");
 
     commands.spawn((
         Name::new("Splash"),
