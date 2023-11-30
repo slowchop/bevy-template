@@ -20,6 +20,7 @@ This is a template for a [Bevy](https://bevyengine.org/) game.
 - A basic 2D character that moves around.
 - Some AI generated placeholders that you should not use.
 - Most things have a `Name` component for easier debugging.
+- Toggle fullscreen plugin.
  
 ## Plugins
 
@@ -32,7 +33,7 @@ This is a template for a [Bevy](https://bevyengine.org/) game.
   - ⚠️ `slowchop_console` is brand new, don't use this for anything too important.
 - Keyboard actions using [leafwing-input-manager](https://github.com/Leafwing-Studios/leafwing-input-manager/).
 - Inspect your entities (via the P key) with [bevy-inspector-egui](https://github.com/jakobhellermann/bevy-inspector-egui).
-
+- Music and sfx with [bevy_kira_audio](https://github.com/NiklasEi/bevy_kira_audio).
 
 ## Licence
 

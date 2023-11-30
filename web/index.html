@@ -6,24 +6,50 @@
       body, html {
           width: 100%;
           height: 100%;
-          margin: 0;
           display: flex;
           justify-content: center;
           align-items: center;
-          background-color: black;
+          background: black;
       }
+
+      /* container holds bevy and loading */
+      #container {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+      }
+
+      /* this should fit in #container */
+      #loading {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          font-size: 10em;
+          color: white;
+          /* really awesome fonts for a game */
+          font-family: 'Press Start 2P', cursive;
+      }
+      /* this should fit in #container */
       #bevy {
           position: absolute;
-          left: 0;
-          top: 0;
-          right: 0;
-          bottom: 0;
+          width: 100%;
+          height: 100%;
       }
+
   </style>
 </head>
 <body>
 
-<canvas id="bevy"></canvas>
+<div id="container">
+  <div id="loading">
+    <div id="loading-text">Loading...</div>
+  </div>
+
+  <canvas id="bevy"></canvas>
+</div>
 
 <script type="module">
     import './restart-audio-context.js'
@@ -33,7 +59,10 @@
         if (!error.message.startsWith("Using exceptions for control flow, don't mind me. This isn't actually an error!")) {
             throw error;
         }
-    });
+    }).then(() => {
+        const loading = document.getElementById('loading');
+        loading.style.display = 'none';
+    })
 </script>
 
 </body>

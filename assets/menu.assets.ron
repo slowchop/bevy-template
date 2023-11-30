@@ -2,4 +2,7 @@
     "menu-background": File (
         path: "menu-background.png"
     ),
+    "background-music": File (
+        path: "beat-thee.mp3"
+    ),
 })

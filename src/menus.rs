@@ -1,7 +1,9 @@
 use crate::assets::MenuAssets;
 use crate::{style, GameState};
 use bevy::app::AppExit;
+use bevy::asset::ErasedAssetLoader;
 use bevy::prelude::*;
+use bevy_kira_audio::{Audio, AudioControl};
 use bevy_ui_dsl::*;
 
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
@@ -19,7 +21,7 @@ pub struct MenusPlugin;
 impl Plugin for MenusPlugin {
     fn build(&self, app: &mut App) {
         app.add_state::<MenuState>();
-        app.add_systems(OnEnter(GameState::Menus), setup);
+        app.add_systems(OnEnter(GameState::Menus), (setup, start_background_audio));
         app.add_systems(OnExit(GameState::Menus), cleanup);
         app.add_systems(
             Update,
@@ -48,6 +50,11 @@ pub struct CreditsButton;
 #[cfg(not(target_arch = "wasm32"))]
 #[derive(Component, Debug)]
 pub struct QuitButton;
+
+// Running this on the load screen really goes chunky. Run it after the audio has loaded.
+pub fn start_background_audio(audio: Res<Audio>, menu_assets: Res<MenuAssets>) {
+    audio.play(menu_assets.background_music.clone());
+}
 
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>, menu_assets: Res<MenuAssets>) {
     info!("menus setup");

@@ -14,6 +14,8 @@ pub struct SplashAssets {
 pub struct MenuAssets {
     #[asset(key = "menu-background")]
     pub menu_background: Handle<Image>,
+    #[asset(key = "background-music")]
+    pub background_music: Handle<AudioSource>,
 }
 
 #[derive(AssetCollection, Resource)]

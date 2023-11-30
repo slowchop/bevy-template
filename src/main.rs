@@ -94,10 +94,7 @@ fn main() {
         game::GamePlugin,
     ));
 
-    app.add_systems(
-        Startup,
-        (setup_2d_camera, start_background_audio, debug_stuff),
-    );
+    app.add_systems(Startup, (setup_2d_camera, debug_stuff));
 
     app.run();
 }
@@ -111,8 +108,4 @@ fn debug_stuff(windows: Query<&Window>) {
     for window in &windows {
         info!("window: {:#?}", window);
     }
-}
-
-fn start_background_audio(asset_server: Res<AssetServer>, audio: Res<Audio>) {
-    audio.play(asset_server.load("beat-thee.mp3")).looped();
 }
