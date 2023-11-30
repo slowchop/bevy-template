@@ -17,6 +17,28 @@ pub fn node_menu(b: &mut NodeBundle) {
     node_dark_half_alpha_background(b);
 }
 
+pub fn node_game_ui(b: &mut NodeBundle) {
+    b.style.flex_direction = FlexDirection::Column;
+}
+
+pub fn node_game_top_ui(b: &mut NodeBundle) {
+    b.style.flex_direction = FlexDirection::Row;
+    b.style.align_items = AlignItems::Start;
+    b.style.justify_content = JustifyContent::Center;
+    b.background_color = Color::rgba(1., 1., 0., 0.7).into();
+}
+
+pub fn node_game_ui_invisible_stretchy_bit(b: &mut NodeBundle) {
+    b.style.flex_grow = 1.;
+}
+
+pub fn node_game_bottom_ui(b: &mut NodeBundle) {
+    b.style.flex_direction = FlexDirection::Row;
+    b.style.align_items = AlignItems::End;
+    b.style.justify_content = JustifyContent::Center;
+    b.background_color = Color::rgba(0., 1., 1., 0.7).into();
+}
+
 pub fn node_dark_half_alpha_background(b: &mut NodeBundle) {
     b.background_color = Color::rgba(0., 0., 0., 0.7).into();
 }

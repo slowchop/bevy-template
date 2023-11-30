@@ -49,7 +49,7 @@ pub struct CreditsButton;
 #[derive(Component, Debug)]
 pub struct QuitButton;
 
-fn setup(mut commands: Commands, assets: Res<AssetServer>, menu_assets: Res<MenuAssets>) {
+fn setup(mut commands: Commands, asset_server: Res<AssetServer>, menu_assets: Res<MenuAssets>) {
     info!("menus setup");
 
     commands.spawn((
@@ -63,7 +63,7 @@ fn setup(mut commands: Commands, assets: Res<AssetServer>, menu_assets: Res<Menu
 
     rooti(
         (style::node_root, style::node_menu),
-        &*assets,
+        &*asset_server,
         &mut commands,
         (Name::new("Menu Root"), Menus),
         |p| {
