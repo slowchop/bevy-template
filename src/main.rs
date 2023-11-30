@@ -6,6 +6,7 @@ mod menus;
 mod splash;
 mod style;
 
+use bevy::asset::AssetMetaCheck;
 use bevy::input::common_conditions::input_toggle_active;
 use bevy::log::LogPlugin;
 use bevy::prelude::*;
@@ -36,7 +37,7 @@ pub enum GameState {
 }
 
 fn main() {
-    // let console_plugin = ConsolePlugin::<ConsoleAction>::default();
+    let console_plugin = ConsolePlugin::<ConsoleAction>::default();
 
     // let default_filter = "info,wgpu=error,naga=warn,winit=info,gilrs=info".to_string();
     // let filter_layer = EnvFilter::try_from_default_env()
@@ -57,11 +58,14 @@ fn main() {
 
     app.add_state::<GameState>();
 
+    // https://github.com/bevyengine/bevy/issues/10157#issuecomment-1802920833
+    app.insert_resource(AssetMetaCheck::Never);
+
     app.add_plugins((
         DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
                 title: "{{ project-name }}".to_string(),
-                // fit_canvas_to_parent: true,
+                fit_canvas_to_parent: true,
                 canvas: Some("#bevy".to_owned()),
                 // Tells wasm not to override default event handling, like F5 and Ctrl+R
                 prevent_default_event_handling: false,
@@ -72,15 +76,15 @@ fn main() {
         // Disabling LogPlugin makes wasm logging not work.
         // .build()
         // .disable::<LogPlugin>(),
-        WorldInspectorPlugin::new().run_if(input_toggle_active(false, KeyCode::F1)),
-        // console_plugin,
-        // InputManagerPlugin::<KeyAction>::default(),
+        WorldInspectorPlugin::new().run_if(input_toggle_active(false, KeyCode::P)),
+        console_plugin,
+        InputManagerPlugin::<KeyAction>::default(),
     ));
 
     // Internal Plugins
     app.add_plugins((
         assets::AssetsPlugin,
-        // console::ConsoleHandlerPlugin,
+        console::ConsoleHandlerPlugin,
         splash::SplashPlugin,
         menus::MenusPlugin,
         game::GamePlugin,
@@ -94,18 +98,6 @@ fn main() {
 fn setup_2d_camera(mut commands: Commands) {
     commands.spawn(Camera2dBundle::default());
     info!("setup 2d camera");
-
-    commands.spawn(Text2dBundle {
-        text: Text::from_section(
-            "{{ project-name }}".to_string(),
-            TextStyle {
-                font_size: 100.,
-                ..default()
-            },
-        ),
-        transform: Transform::from_translation(Vec3::new(0., 0., 1.)),
-        ..default()
-    });
 }
 
 fn debug_stuff(windows: Query<&Window>) {

@@ -17,8 +17,8 @@ pub struct Splash;
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>, splash_assets: Res<SplashAssets>) {
     info!("splash setup");
 
-    // let texture = splash_assets.loading_splash.clone();
-    let texture = asset_server.load("loading-splash.png");
+    let texture = splash_assets.loading_splash.clone();
+    // let texture = asset_server.load("bevy.png");
 
     commands.spawn((
         Name::new("Splash"),

@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-bevy = "0.12.0"
+bevy = "0.12.1"
 
 # Bevy plugins
 slowchop_console = { version = "0.1.2", path = "../slowchop_console/slowchop_console" }
