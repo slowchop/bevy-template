@@ -3,6 +3,7 @@ use bevy::prelude::*;
 use bevy_asset_loader::asset_collection::AssetCollection;
 use bevy_asset_loader::prelude::*;
 use bevy_kira_audio::{Audio, AudioSource};
+use iyes_progress::ProgressPlugin;
 
 #[derive(AssetCollection, Resource)]
 pub struct SplashAssets {
@@ -31,19 +32,24 @@ pub struct AssetsPlugin;
 
 impl Plugin for AssetsPlugin {
     fn build(&self, app: &mut App) {
+        app.add_plugins(
+            ProgressPlugin::new(GameState::SplashWhileLoadingAssets).continue_to(GameState::Menus),
+        );
+
         // Assets only for the splash screen
         app.add_loading_state(
             LoadingState::new(GameState::LoadingSplashAssets)
                 .continue_to_state(GameState::SplashWhileLoadingAssets),
         );
+        // app.add_loading_state(LoadingState::new(GameState::LoadingSplashAssets));
         app.add_collection_to_loading_state::<_, SplashAssets>(GameState::LoadingSplashAssets);
 
         // The rest of the assets.
-        // TODO: Block on menu loading here, and trigger a background load of the game assets.
         app.add_loading_state(
             LoadingState::new(GameState::SplashWhileLoadingAssets)
                 .continue_to_state(GameState::Menus),
         );
+        // app.add_loading_state(LoadingState::new(GameState::SplashWhileLoadingAssets));
         app.add_dynamic_collection_to_loading_state::<_, StandardDynamicAssetCollection>(
             GameState::SplashWhileLoadingAssets,
             "menu.assets.ron",

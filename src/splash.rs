@@ -1,13 +1,17 @@
 use crate::assets::SplashAssets;
 use crate::GameState;
 use bevy::prelude::*;
+use iyes_progress::ProgressCounter;
 
 pub struct SplashPlugin;
 
 impl Plugin for SplashPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(OnEnter(GameState::SplashWhileLoadingAssets), setup);
-        app.add_systems(OnExit(GameState::SplashWhileLoadingAssets), cleanup);
+        let state = GameState::SplashWhileLoadingAssets;
+
+        app.add_systems(OnEnter(state), setup);
+        app.add_systems(OnExit(state), cleanup);
+        app.add_systems(Update, progress.run_if(in_state(state)));
     }
 }
 
@@ -35,4 +39,10 @@ fn cleanup(mut commands: Commands, query: Query<Entity, With<Splash>>) {
     for entity in query.iter() {
         commands.entity(entity).despawn_recursive();
     }
+}
+
+fn progress(progress: Option<Res<ProgressCounter>>) {
+    let Some(progress) = progress else { return };
+
+    info!("progress: {:?}", progress.progress());
 }
