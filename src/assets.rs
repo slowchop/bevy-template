@@ -32,16 +32,21 @@ pub struct AssetsPlugin;
 
 impl Plugin for AssetsPlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins(
-            ProgressPlugin::new(GameState::SplashWhileLoadingAssets).continue_to(GameState::Menus),
-        );
+        // TODO: This is a bit crashy. Assets don't seem to be actually loading.
+        // app.add_plugins(
+        //     ProgressPlugin::new(GameState::LoadingSplashAssets)
+        //         .continue_to(GameState::SplashWhileLoadingAssets),
+        // );
+        // app.add_plugins(
+        //     ProgressPlugin::new(GameState::SplashWhileLoadingAssets).continue_to(GameState::Menus),
+        // );
 
         // Assets only for the splash screen
         app.add_loading_state(
             LoadingState::new(GameState::LoadingSplashAssets)
                 .continue_to_state(GameState::SplashWhileLoadingAssets),
         );
-        // app.add_loading_state(LoadingState::new(GameState::LoadingSplashAssets));
+        app.add_loading_state(LoadingState::new(GameState::LoadingSplashAssets));
         app.add_collection_to_loading_state::<_, SplashAssets>(GameState::LoadingSplashAssets);
 
         // The rest of the assets.
@@ -49,7 +54,7 @@ impl Plugin for AssetsPlugin {
             LoadingState::new(GameState::SplashWhileLoadingAssets)
                 .continue_to_state(GameState::Menus),
         );
-        // app.add_loading_state(LoadingState::new(GameState::SplashWhileLoadingAssets));
+        app.add_loading_state(LoadingState::new(GameState::SplashWhileLoadingAssets));
         app.add_dynamic_collection_to_loading_state::<_, StandardDynamicAssetCollection>(
             GameState::SplashWhileLoadingAssets,
             "menu.assets.ron",
