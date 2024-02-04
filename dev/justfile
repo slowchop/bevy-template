@@ -16,4 +16,4 @@ sync:
         -E dev \
         -E out \
         -E assets \
-        -x sed -i '' 's/test-bevy-template/{{{{ project-name }}/g'
+        -x sed -i '' 's/test-bevy-template/\{\{ project-name \}\}/g'
